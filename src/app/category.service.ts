@@ -18,7 +18,7 @@ export class CategoryService {
         map(categories => {
           return categories.map(cat => ({
             key: cat.key,
-            name: cat.payload.val().name
+            name: (<any>cat.payload.val()).name
           }));
         })
       );
