@@ -21,9 +21,9 @@ export class BsNavbarComponent implements OnInit {
     this.auth.appUser$.subscribe(appUser => this.appUser = appUser);
     let cart$ = await this.shoppingCartService.getCart();
 
-    cart$.subscribe(cart => {
-      cart.items
-    })
+    // cart$.subscribe(cart => {
+    //   cart.items
+    // })
   }
 
   logout() {
