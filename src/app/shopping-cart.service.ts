@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
+import { AngularFireDatabase, AngularFireObject } from '@angular/fire/database';
 import { Product } from './models/products';
-import { take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { ShoppingCart } from './models/shopping-cart';
 import { Observable } from 'rxjs';
+import { FirebaseObjectObservable } from '@angular/fire/database-deprecated';
 
 @Injectable({
   providedIn: 'root'
@@ -20,9 +21,15 @@ export class ShoppingCartService {
     });
   }
 
-  async getCart() {
-    let cartId = await this.getOrCreateCartId();
-    return this.db.object('/shopping-carts/' + cartId).valueChanges();
+  async getCart(): Promise<Observable<ShoppingCart>> {
+    const cartId = await this.getOrCreateCartId();
+    return new Promise<Observable<ShoppingCart>>((resolve, reject) => {
+      const o$ = this.db.object('/shopping-carts/' + cartId).valueChanges().pipe(
+        map((x) => new ShoppingCart(x.items))
+      );
+
+      resolve(o$);
+    });
   }
 
   private getItem(cartId: string, productId: string) {
@@ -30,12 +37,12 @@ export class ShoppingCartService {
   }
 
   private async getOrCreateCartId(): Promise<string> {
-    let cartId = localStorage.getItem('cartId');
+    const cartId = localStorage.getItem('cartId');
 
     if (cartId)
       return cartId;
 
-    let result = await this.create();
+    const result = await this.create();
     localStorage.setItem('cartId', result.key);
     return result.key;
   }
