@@ -5,9 +5,14 @@ export class ShoppingCart {
   items: ShoppingCartItem[] = [];
 
   constructor(public itemsMap: { [productId: string]: ShoppingCartItem }) {
+    this.itemsMap = itemsMap || {};
     for (let productId in itemsMap) {
       let item = itemsMap[productId];
-      this.items.push(new ShoppingCartItem(item.product, item.quantity));
+      console.info(item, 'item');
+      let x = new ShoppingCartItem();
+      Object.assign(x, item);
+      x.key = productId;
+      this.items.push(x);
     }
   }
 
@@ -25,12 +30,10 @@ export class ShoppingCart {
     for(let productId in this.items) {
       sum += this.items[productId].totalPrice;
     }
-
     return sum;
   }
 
   getQuantity(product: Product) {
-    console.info(product);
     let item = this.itemsMap[product.key];
     return item ? item.quantity : 0;
   }
