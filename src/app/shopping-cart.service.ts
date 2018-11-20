@@ -4,7 +4,6 @@ import { Product } from './models/products';
 import { map, take } from 'rxjs/operators';
 import { ShoppingCart } from './models/shopping-cart';
 import { Observable } from 'rxjs';
-import { FirebaseObjectObservable } from '@angular/fire/database-deprecated';
 
 @Injectable({
   providedIn: 'root'
