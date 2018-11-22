@@ -4,6 +4,7 @@ import { Product } from './models/products';
 import { map, take } from 'rxjs/operators';
 import { ShoppingCart } from './models/shopping-cart';
 import { Observable } from 'rxjs';
+import { ShoppingCartItem } from './models/shopping-cart-item';
 
 @Injectable({
   providedIn: 'root'
@@ -24,9 +25,10 @@ export class ShoppingCartService {
 
   async getCart(): Promise<Observable<ShoppingCart>> {
     const cartId = await this.getOrCreateCartId();
+
     return new Promise<Observable<ShoppingCart>>((resolve, reject) => {
       const o$ = this.db.object('/shopping-carts/' + cartId).valueChanges().pipe(
-        map((x) => new ShoppingCart(x.items))
+        map((x: {items: {[key: string]: ShoppingCartItem}}) => new ShoppingCart(x.items))
       );
 
       resolve(o$);
@@ -34,7 +36,7 @@ export class ShoppingCartService {
   }
 
   async clearCart() {
-    let cartId = await this.getOrCreateCartId();
+    const cartId = await this.getOrCreateCartId();
 
     this.db.object('/shopping-carts/' + cartId + '/items').remove();
   }
